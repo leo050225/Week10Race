@@ -8,11 +8,10 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class GameViewModel: ViewModel() {
+class GameViewModel : ViewModel() {
 
     var screenWidthPx by mutableStateOf(0f)
         private set
-
     var screenHeightPx by mutableStateOf(0f)
         private set
 
@@ -21,31 +20,31 @@ class GameViewModel: ViewModel() {
     var circleX by mutableStateOf(0f)
     var circleY by mutableStateOf(0f)
 
-    val horse = Horse()
+    var score by mutableStateOf(0)
 
-    // 設定螢幕寬度與高度
     fun SetGameSize(w: Float, h: Float) {
         screenWidthPx = w
         screenHeightPx = h
+
+        // ⭐ 初始位置：垂直置中、最左邊
+        circleX = 100f
+        circleY = screenHeightPx / 2
     }
 
     fun StartGame() {
-        //回到初使位置
-        circleX = 100f
-        circleY = screenHeightPx - 100f
+        score = 0
 
         viewModelScope.launch {
-            while (gameRunning) { // 每0.1秒循環
+            while (gameRunning) {
                 delay(100)
-                circleX += 10
 
-                if (circleX >= screenWidthPx - 100){
+                // ⭐ 加速
+                circleX += 25
+
+                // 撞右邊 → 回左邊 +1 分
+                if (circleX >= screenWidthPx - 100) {
                     circleX = 100f
-                }
-
-                horse.Run()
-                if (horse.HorseX >= screenWidthPx - 300){
-                    horse.HorseX = 0
+                    score++
                 }
             }
         }
@@ -55,8 +54,4 @@ class GameViewModel: ViewModel() {
         circleX += x
         circleY += y
     }
-
-
-
-
 }
